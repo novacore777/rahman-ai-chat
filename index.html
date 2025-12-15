@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-box {
+      width: 100%;
+      max-width: 400px;
+      background: #020617;
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .msg {
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .user {
+      background: #2563eb;
+      align-self: flex-end;
+    }
+    .bot {
+      background: #334155;
+      align-self: flex-start;
+    }
+    input, button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    input {
+      flex: 1;
+      margin-right: 5px;
+    }
+    .input-box {
+      display: flex;
+    }
+    button {
+      background: #22c55e;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-box">
+  <div class="messages" id="messages"></div>
+
+  <div class="input-box">
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const messages = document.getElementById("messages");
+  const text = input.value.trim();
+  if (!text) return;
+
+  // User message
+  messages.innerHTML += `<div class="msg user">${text}</div>`;
+  input.value = "";
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    const res = await fetch(
+      `https://shaikhs-ai.rajageminiwala.workers.dev/chat/get?prompt=${encodeURIComponent(text)}&model=gpt-5`
+    );
+    const data = await res.json();
+
+    const reply = data.response || "No response";
+    messages.innerHTML += `<div class="msg bot">${reply}</div>`;
+    messages.scrollTop = messages.scrollHeight;
+  } catch (err) {
+    messages.innerHTML += `<div class="msg bot">Error connecting to AI</div>`;
+  }
+}
+</script>
+
+</body>
+  </html>
